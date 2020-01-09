@@ -5,7 +5,7 @@ wb = openpyxl.load_workbook('example.xlsx')
 
 print(wb.sheetnames)
 
-for sheet in wb:
+for sheet in wb:     #遍历每个sheet
     print(sheet.title)
 
 # 2. Creating Sheets from the workbook

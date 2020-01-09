@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="93f9a482-f3d3-4999-b431-697646c7a93c" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/example.xlsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training1.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/~$example.xlsx" afterDir="false" />
+    <list default="true" id="93f9a482-f3d3-4999-b431-697646c7a93c" name="Default Changelist" comment="Python操控Excle之读取">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/training1.py" beforeDir="false" afterPath="$PROJECT_DIR$/training1.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/~$example.xlsx" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,6 +27,7 @@
       </list>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="UPDATE_TYPE" value="MERGE" />
   </component>
   <component name="IgnoredFileRootStore">
     <option name="generatedRoots">
@@ -47,6 +49,7 @@
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="settings.editor.selected.configurable" value="preferences.externalTools" />
   </component>
   <component name="RunManager">
     <configuration name="training1" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
@@ -103,17 +106,43 @@
       <option name="presentableId" value="Default" />
       <updated>1577707380699</updated>
     </task>
+    <task id="LOCAL-00001" summary="Python操控Excle之读取">
+      <created>1577714483085</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1577714483085</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Python操控Excle之读取">
+      <created>1577716573449</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1577716573449</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="Python操控Excle之读取" />
+    <option name="LAST_COMMIT_MESSAGE" value="Python操控Excle之读取" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="342" y="55" key="CommitChangelistDialog2" timestamp="1577714392473">
+    <state x="507" y="243" key="#com.intellij.ide.macro.MacrosDialog" timestamp="1577718307752">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state x="342" y="55" key="CommitChangelistDialog2/0.0.1440.900/1440.0.1600.900@0.0.1440.900" timestamp="1577713376422" />
+    <state x="507" y="243" key="#com.intellij.ide.macro.MacrosDialog/0.0.1440.900@0.0.1440.900" timestamp="1577718307752" />
+    <state x="482" y="296" width="474" height="466" key="#com.intellij.tools.ToolEditorDialog" timestamp="1577718727428">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="482" y="296" width="474" height="466" key="#com.intellij.tools.ToolEditorDialog/0.0.1440.900@0.0.1440.900" timestamp="1577718727428" />
+    <state x="342" y="55" key="CommitChangelistDialog2" timestamp="1577716641428">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="342" y="55" key="CommitChangelistDialog2/0.0.1440.900/1440.0.1600.900@0.0.1440.900" timestamp="1577714482968" />
     <state x="342" y="55" key="CommitChangelistDialog2/0.0.1440.900/1440.23.1600.877@0.0.1440.900" timestamp="1577714392473" />
+    <state x="342" y="55" key="CommitChangelistDialog2/0.0.1440.900@0.0.1440.900" timestamp="1577716641428" />
     <state x="596" y="360" key="Github.ShareDialog" timestamp="1577707458609">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
@@ -122,25 +151,44 @@
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state x="542" y="170" key="Github.UntrackedFilesDialog/0.23.1440.826/1440.23.1600.877@0.23.1440.826" timestamp="1577707474501" />
-    <state width="1419" height="245" key="GridCell.Tab.0.bottom" timestamp="1577713897057">
+    <state width="1419" height="245" key="GridCell.Tab.0.bottom" timestamp="1577714855793">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="1419" height="245" key="GridCell.Tab.0.bottom/0.0.1440.900/1440.0.1600.900@0.0.1440.900" timestamp="1577713897057" />
-    <state width="1419" height="245" key="GridCell.Tab.0.center" timestamp="1577713897056">
+    <state width="1419" height="245" key="GridCell.Tab.0.bottom/0.0.1440.900/1440.0.1600.900@0.0.1440.900" timestamp="1577714490953" />
+    <state width="1419" height="245" key="GridCell.Tab.0.bottom/0.0.1440.900/1440.23.1600.877@0.0.1440.900" timestamp="1577714855793" />
+    <state width="1419" height="245" key="GridCell.Tab.0.center" timestamp="1577714855791">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="1419" height="245" key="GridCell.Tab.0.center/0.0.1440.900/1440.0.1600.900@0.0.1440.900" timestamp="1577713897056" />
-    <state width="1419" height="245" key="GridCell.Tab.0.left" timestamp="1577713897055">
+    <state width="1419" height="245" key="GridCell.Tab.0.center/0.0.1440.900/1440.0.1600.900@0.0.1440.900" timestamp="1577714490951" />
+    <state width="1419" height="245" key="GridCell.Tab.0.center/0.0.1440.900/1440.23.1600.877@0.0.1440.900" timestamp="1577714855791" />
+    <state width="1419" height="245" key="GridCell.Tab.0.left" timestamp="1577714855791">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="1419" height="245" key="GridCell.Tab.0.left/0.0.1440.900/1440.0.1600.900@0.0.1440.900" timestamp="1577713897055" />
-    <state width="1419" height="245" key="GridCell.Tab.0.right" timestamp="1577713897056">
+    <state width="1419" height="245" key="GridCell.Tab.0.left/0.0.1440.900/1440.0.1600.900@0.0.1440.900" timestamp="1577714490950" />
+    <state width="1419" height="245" key="GridCell.Tab.0.left/0.0.1440.900/1440.23.1600.877@0.0.1440.900" timestamp="1577714855791" />
+    <state width="1419" height="245" key="GridCell.Tab.0.right" timestamp="1577714855792">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
-    <state width="1419" height="245" key="GridCell.Tab.0.right/0.0.1440.900/1440.0.1600.900@0.0.1440.900" timestamp="1577713897056" />
-    <state x="503" y="374" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1577713356608">
+    <state width="1419" height="245" key="GridCell.Tab.0.right/0.0.1440.900/1440.0.1600.900@0.0.1440.900" timestamp="1577714490952" />
+    <state width="1419" height="245" key="GridCell.Tab.0.right/0.0.1440.900/1440.23.1600.877@0.0.1440.900" timestamp="1577714855792" />
+    <state x="529" y="167" key="RollbackChangesDialog" timestamp="1577716638565">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="529" y="167" key="RollbackChangesDialog/0.0.1440.900@0.0.1440.900" timestamp="1577716638565" />
+    <state x="221" y="89" key="SettingsEditor" timestamp="1577718728456">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="221" y="89" key="SettingsEditor/0.0.1440.900@0.0.1440.900" timestamp="1577718728456" />
+    <state x="320" y="198" key="Vcs.Push.Dialog.v2" timestamp="1578575106515">
+      <screen x="0" y="23" width="1440" height="826" />
+    </state>
+    <state x="320" y="191" key="Vcs.Push.Dialog.v2/0.0.1440.900/1440.0.1600.900@0.0.1440.900" timestamp="1577714668329" />
+    <state x="320" y="191" key="Vcs.Push.Dialog.v2/0.0.1440.900@0.0.1440.900" timestamp="1577716743705" />
+    <state x="320" y="198" key="Vcs.Push.Dialog.v2/0.23.1440.826@0.23.1440.826" timestamp="1578575106515" />
+    <state x="503" y="374" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1577716673646">
       <screen x="0" y="0" width="1440" height="900" />
     </state>
     <state x="503" y="374" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1440.900/1440.0.1600.900@0.0.1440.900" timestamp="1577713356608" />
+    <state x="503" y="374" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1440.900@0.0.1440.900" timestamp="1577716673646" />
   </component>
 </project>
