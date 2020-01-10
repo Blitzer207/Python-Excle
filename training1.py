@@ -56,11 +56,12 @@ for row in ws.iter_rows(min_row=1, max_row=3, max_col=2):
 #4.7 运用元组
 print(tuple(ws.rows))        #由内而外： 内部是以行cell组成的元组，外部是以行组成的元组
 
-#4.8 以单元格为对象为单元格
+#4.8 单元格切片
 cell_range = ws['A2:C6']
 for RowOfboject in cell_range:
     for cellObj in RowOfboject:
         print(cellObj.coordinate,cellObj.value)
+
 # 4.9 reference coordinate
 # 4.9.1
 c = ws['B1']
