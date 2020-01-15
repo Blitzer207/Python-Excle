@@ -1,0 +1,462 @@
+
+
+'''
+Read and write Excel using pandas
+'''
+__author__ = "EAY3-CN"
+
+
+#import win32com.client
+#from win32com.client import constants
+
+import os,sys
+import  pandas  as pd
+from pandas import Series,DataFrame
+from numpy.random import randn
+import openpyxl
+from openpyxl import Workbook
+from openpyxl import load_workbook
+from openpyxl.writer.excel import ExcelWriter
+import numpy as np
+import matplotlib.pyplot as plt
+import xlrd #不支持xlsx文件
+import xlwt #xlwt不支持xlsx
+import win32com.client
+from win32com.client import constants
+import xlsxwriter
+import xlwings as xw
+import glob
+import shutil
+
+# ------------------ history reports ----------------
+#Req_Report     = '.\\ReqCUSRSASW\\*.xlsx'
+Req_Report     = '.\\ReqCUSRSASW\\2020-01-08_140301_GAC_A18_DASY_CUSTOMERREQSTATUSASW.xlsx'
+#Req_Report     = '.\\ReqSYSRSBSW\\2020-01-11_050530_GAC_A18_DASY_SYSTEMREQSTATUSBSW.xlsx'
+
+# dictonary to store filtered data
+g_Status_Dict       = {'Date':[], 'Agreed':[], 'N/A':[], 'Rejected':[], 'Negotiate':[], 'Submitted':[], 'Draft':[], 'Obsolete':[], '-':[]}
+
+g_CusRS_Status_Dict        = {'Agreed':[], 'Rejected':[],  'Negotiate':[], '-':[]}
+g_CusRSAgreed_Dict         = {'AgreedLinked%':[]}
+
+g_SysSWRS_Status_Dict      = {'Agreed':[], 'Negotiate':[], 'Submitted':[], 'Draft':[], '-':[]}
+g_SysSWRSAgreed_Dict       = {'AgreedLinked%':[], 'AgreedImplemented%':[]}
+
+
+
+# ------------------------------------------------------------------------
+
+# infor in excel
+PIVOTSHEET      = 'PivotReqSrc'
+NEWSUMSHEET     = 'NEW_SUMMARY'
+ReqTestSheet    = 'ReqTestStatus'
+TMP_FILE        = 'tmp.xlsx'
+
+g_Col_Name_Status  = 'Status A18'
+g_Col_Name_List    = ['Status A18', 'LINKED_REQ', 'DA_Variant_Implemented']
+
+g_Status_Agreed     = 'Agreed'
+g_Status_NA         = 'nan'
+g_Status_Rejected   = 'Rejected'
+g_Status_Negotiate  = 'Negotiate'
+g_Status_Submitted  = 'Submitted'
+g_Status_Draft      = 'Draft'
+g_Status_Obsolete   = 'Obsolete'
+g_Status_None       = 'None'
+
+
+g_Linked_Value     = ['ReqLinked']
+g_Imple_Value      = ['GAC_A18_5R1V1D']
+
+g_Color_CusRS		= ['#0fa000', '#800000', '#ffd700', '#d3d3d3']
+g_Color_SysSWRS		= ['#0fa000', '#ffd700', '#008b8b', '#808080', '#d3d3d3']
+
+# size of graph
+g_Width            = 600
+g_Height           = 600
+
+
+def _Gen_CusRSGraph(_Sum_Status_Dic, _Sum_Agreed_Dic, _Req_Report):
+    if _Sum_Status_Dic != {} and _Sum_Agreed_Dic != {}:
+        print('############## Read Data from reports - start ##############')
+        l_Last_Valid_idx      = 0 # last Valid history report index
+
+        l_Cnt_Agreed    = 0
+        l_Cnt_Rejected  = 0
+        l_Cnt_Negotiate = 0
+        l_Cnt_None      = 0
+
+        l_AgreedLinked_Cnt = 0
+
+        # use glob to list all reports
+        HIS_REPORTS = glob.glob(_Req_Report)
+
+		# end if no report found
+        if HIS_REPORTS == []:
+            print('No reports found in ', _Req_Report)
+            return
+
+        # sort to make sure the last is the latest report
+        HIS_REPORTS.sort()
+
+        #print all history reports
+        #for files in HIS_REPORTS:
+        #    print(files)
+
+        print (len(HIS_REPORTS), ' reports are history folder', )
+
+
+        # scan all history report to get the number
+        for his_idx in range(len(HIS_REPORTS)):
+            #read specific excel and sheet
+            print(HIS_REPORTS[his_idx])
+
+            try:
+                # read pivot sheet in report
+                df = pd.read_excel(HIS_REPORTS[his_idx], sheet_name = PIVOTSHEET)
+            except:
+                print('No PivotReqSrc sheet')
+                continue
+            else:
+                 l_Last_Valid_idx = his_idx # stort latest report index
+                 for i in df.index.values: #获取行号的索引，并对其进行遍历：
+                    # 根据i来获取每一行指定的数据 并利用to_dict转成字典
+                    #get all status count
+                    if df.loc[i, g_Col_Name_Status] == g_Status_Agreed:
+                        l_Cnt_Agreed += 1
+                    if df.loc[i, g_Col_Name_Status] == g_Status_Rejected:
+                        l_Cnt_Rejected += 1
+                    if df.loc[i, g_Col_Name_Status] == g_Status_Negotiate:
+                        l_Cnt_Negotiate += 1
+                    if df.loc[i, g_Col_Name_Status] == g_Status_None:
+                        l_Cnt_None += 1
+
+
+
+                    #AgreedLinked
+                    if df.loc[i, g_Col_Name_List[0]] == g_Status_Agreed and df.loc[i, g_Col_Name_List[1]] in g_Linked_Value:
+                        l_AgreedLinked_Cnt += 1
+
+
+
+            # store Status data to dic
+            _Sum_Status_Dic['Agreed'].append(l_Cnt_Agreed)
+            _Sum_Status_Dic['Rejected'].append(l_Cnt_Rejected)
+            _Sum_Status_Dic['Negotiate'].append(l_Cnt_Negotiate)
+            _Sum_Status_Dic['-'].append(l_Cnt_None)
+
+
+            # store Agreed line data to dic
+            _Sum_Agreed_Dic['AgreedLinked%'].append(l_AgreedLinked_Cnt/l_Cnt_Agreed*100)
+
+            l_Cnt_Agreed    = 0
+            l_Cnt_Rejected  = 0
+            l_Cnt_Negotiate = 0
+            l_Cnt_None      = 0
+
+            l_AgreedLinked_Cnt = 0
+
+
+
+        l_CusRSDataHeader_len                    = len(_Sum_Status_Dic)
+
+
+        print('############## Read Data from reports - end ##############')
+
+
+        print('############# xlsxwriter - Generate a tmp excel and input grath - start #############')
+# ----------- write dic to excel start ----------- #
+        #print('_Sum_Status_Dic = ', _Sum_Status_Dic)
+        writer = pd.ExcelWriter(TMP_FILE, engine='xlsxwriter')
+
+        from_col = 0
+        df = pd.DataFrame(_Sum_Status_Dic, columns=_Sum_Status_Dic.keys())
+        df.to_excel(writer, index=False, sheet_name=NEWSUMSHEET, startrow = 0, startcol = from_col)
+
+        from_col = l_CusRSDataHeader_len
+        #print('from_col = ', from_col)
+        df1 = pd.DataFrame(_Sum_Agreed_Dic, columns=_Sum_Agreed_Dic.keys())
+        df1.to_excel(writer, index=False, sheet_name=NEWSUMSHEET, startrow = 0, startcol = from_col)
+# ----------- write dic to excel end ----------- #
+
+# --------generate status chart colum start ---------------
+
+        tmp_workbook = writer.book
+        new_worksheet = writer.sheets[NEWSUMSHEET]
+
+        # create chart type
+        chart_status = tmp_workbook.add_chart({'type': 'pie'})
+
+        start_col = 0
+        end_col   = start_col+l_CusRSDataHeader_len  # show status columns
+        print('end_col = ', end_col)
+        # depends the number of lines data
+#        for col_num in range(start_col, end_col):
+#            print ('col_num = ', col_num)
+        chart_status.add_series({
+                'name':       'CusRS -[ASW]', # legend - header fixed
+                'categories': [NEWSUMSHEET, 0, 0, 0, l_CusRSDataHeader_len-1], # x-axis 分类 - Date column - fixed
+                'values':     [NEWSUMSHEET, 1, 0, 1, l_CusRSDataHeader_len-1], # y-axis series values in column
+                'data_labels': {'value': True},  # 是否在图表上显示数值
+                'points': [
+                        {'fill': {'color': g_Color_CusRS[0]}},
+                        {'fill': {'color': g_Color_CusRS[1]}},
+                        {'fill': {'color': g_Color_CusRS[2]}},
+                        {'fill': {'color': g_Color_CusRS[3]}},
+                        ],
+            })
+#
+        # 设置Legend位置
+        chart_status.set_legend({'position': 'bottom'})
+        # 图表大小（像素）
+        chart_status.set_size({'width': g_Width, 'height': g_Height})
+
+        # 把图表插入到worksheet以及偏移
+        new_worksheet.insert_chart('A10', chart_status, {'x_offset': 100, 'y_offset': 200})
+
+# --------generate status chart colum end ---------------
+
+
+
+
+        # close tmp file after generate two combined chart
+        writer.save()
+        tmp_workbook.close()
+
+        print('############# xlsxwriter - Generate a tmp excel and input grath - end #############')
+
+        print('############ copy sheet to latest report - start ############')
+        # app = xw.App(visible=True,add_book=False)
+        # #wb_tmp = app.books.add()
+        # wb_tmp = app.books.open(TMP_FILE)
+
+        # app_la = xw.App(visible=True,add_book=False)
+        # #wb_latest = app_la.books.add()
+        # wb_latest = app_la.books.open(HIS_REPORTS[l_Last_Valid_idx])
+
+        wb_tmp = xw.Book(TMP_FILE)
+        sheet_new   = wb_tmp.sheets(NEWSUMSHEET)
+
+        wb_latest = xw.Book(HIS_REPORTS[l_Last_Valid_idx])
+
+        # After is not working
+        sheet_new.api.Copy(Before=wb_latest.sheets[ReqTestSheet].api)
+
+        wb_tmp.close()
+        #wb_tmp.app.quit()
+
+        wb_latest.save()
+        wb_latest.close()
+        #wb_latest.app.quit()
+
+
+        #判断文件是否存在
+        #os.rmdir("myfolder")  # delete folder
+        if os.path.exists(TMP_FILE):
+          os.remove(TMP_FILE)
+          print("Tmp file deleted")
+        else:
+          print("Tmp file does not exist")
+        print('############ copy sheet to latest report - end ############')
+    else:
+        print('dic is empty')
+
+def _Gen_SysSWRSGraph(_Sum_Status_Dic, _Sum_Agreed_Dic, _Req_Report):
+    if _Sum_Status_Dic != {} and _Sum_Agreed_Dic != {}:
+        print('############## Read Data from reports - start ##############')
+        l_Last_Valid_idx      = 0 # last Valid history report index
+
+        l_Cnt_Agreed    = 0
+        l_Cnt_Negotiate = 0
+        l_Cnt_Submitted = 0
+        l_Cnt_Draft     = 0
+        l_Cnt_None      = 0
+
+        l_AgreedLinked_Cnt = 0
+        l_AgreedImplemented_Cnt = 0
+
+
+        # use glob to list all reports
+        HIS_REPORTS = glob.glob(_Req_Report)
+
+		# end if no report found
+        if HIS_REPORTS == []:
+            print('No reports found in ', _Req_Report)
+            return
+
+        # sort to make sure the last is the latest report
+        HIS_REPORTS.sort()
+
+        #print all history reports
+        #for files in HIS_REPORTS:
+        #    print(files)
+
+        print (len(HIS_REPORTS), ' reports are history folder', )
+
+
+        # scan all history report to get the number
+        for his_idx in range(len(HIS_REPORTS)):
+            #read specific excel and sheet
+            print(HIS_REPORTS[his_idx])
+
+            try:
+                # read pivot sheet in report
+                df = pd.read_excel(HIS_REPORTS[his_idx], sheet_name = PIVOTSHEET)
+            except:
+                print('No PivotReqSrc sheet')
+                continue
+            else:
+                 l_Last_Valid_idx = his_idx # stort latest report index
+                 for i in df.index.values: #获取行号的索引，并对其进行遍历：
+                    # 根据i来获取每一行指定的数据 并利用to_dict转成字典
+                    #get all status count
+                    if df.loc[i, g_Col_Name_Status] == g_Status_Agreed:
+                        l_Cnt_Agreed += 1
+                    if df.loc[i, g_Col_Name_Status] == g_Status_Negotiate:
+                        l_Cnt_Negotiate += 1
+                    if df.loc[i, g_Col_Name_Status] == g_Status_Submitted:
+                        l_Cnt_Submitted += 1
+                    if df.loc[i, g_Col_Name_Status] == g_Status_Draft:
+                        l_Cnt_Draft += 1
+                    if df.loc[i, g_Col_Name_Status] == g_Status_None:
+                        l_Cnt_None += 1
+
+
+                    #AgreedLinked
+                    if df.loc[i, g_Col_Name_List[0]] == g_Status_Agreed and df.loc[i, g_Col_Name_List[1]] in g_Linked_Value:
+                        l_AgreedLinked_Cnt += 1
+                    if df.loc[i, g_Col_Name_List[0]] == g_Status_Agreed and g_Imple_Value[0] in df.loc[i, g_Col_Name_List[2]]:
+                        l_AgreedImplemented_Cnt += 1
+
+
+            # store Status data to dic
+            _Sum_Status_Dic['Agreed'].append(l_Cnt_Agreed)
+            _Sum_Status_Dic['Negotiate'].append(l_Cnt_Negotiate)
+            _Sum_Status_Dic['Submitted'].append(l_Cnt_Submitted)
+            _Sum_Status_Dic['Draft'].append(l_Cnt_Draft)
+            _Sum_Status_Dic['-'].append(l_Cnt_None)
+
+
+            # store Agreed line data to dic
+            _Sum_Agreed_Dic['AgreedLinked%'].append(l_AgreedLinked_Cnt/l_Cnt_Agreed*100)
+            _Sum_Agreed_Dic['AgreedImplemented%'].append(l_AgreedImplemented_Cnt/l_Cnt_Agreed*100)
+
+            l_Cnt_Agreed    = 0
+            l_Cnt_Negotiate = 0
+            l_Cnt_Submitted = 0
+            l_Cnt_Draft     = 0
+            l_Cnt_None      = 0
+
+            l_AgreedLinked_Cnt = 0
+            l_AgreedImplemented_Cnt = 0
+
+
+        l_SysSWRSDataHeader_len                  = len(_Sum_Status_Dic)
+
+
+        print('############## Read Data from reports - end ##############')
+
+
+        print('############# xlsxwriter - Generate a tmp excel and input grath - start #############')
+# ----------- write dic to excel start ----------- #
+        #print('_Sum_Status_Dic = ', _Sum_Status_Dic)
+        writer = pd.ExcelWriter(TMP_FILE, engine='xlsxwriter')
+
+        from_col = 0
+        df = pd.DataFrame(_Sum_Status_Dic, columns=_Sum_Status_Dic.keys())
+        df.to_excel(writer, index=False, sheet_name=NEWSUMSHEET, startrow = 0, startcol = from_col)
+
+        from_col = l_SysSWRSDataHeader_len
+        #print('from_col = ', from_col)
+        df1 = pd.DataFrame(_Sum_Agreed_Dic, columns=_Sum_Agreed_Dic.keys())
+        df1.to_excel(writer, index=False, sheet_name=NEWSUMSHEET, startrow = 0, startcol = from_col)
+# ----------- write dic to excel end ----------- #
+
+# --------generate status chart colum start ---------------
+
+        tmp_workbook = writer.book
+        new_worksheet = writer.sheets[NEWSUMSHEET]
+
+        # create chart type
+        chart_status = tmp_workbook.add_chart({'type': 'pie'})
+
+        start_col = 0
+        end_col   = start_col+l_SysSWRSDataHeader_len  # show status columns
+        print('end_col = ', end_col)
+        # depends the number of lines data
+#        for col_num in range(start_col, end_col):
+#            print ('col_num = ', col_num)
+        chart_status.add_series({
+                'name':       'SysRS -[BSW]', # legend - header fixed
+                'categories': [NEWSUMSHEET, 0, 0, 0, l_SysSWRSDataHeader_len-1], # x-axis 分类 - Date column - fixed
+                'values':     [NEWSUMSHEET, 1, 0, 1, l_SysSWRSDataHeader_len-1], # y-axis series values in column
+                'data_labels': {'value': True},  # 是否在图表上显示数值
+                'points': [
+                        {'fill': {'color': g_Color_SysSWRS[0]}},
+                        {'fill': {'color': g_Color_SysSWRS[1]}},
+                        {'fill': {'color': g_Color_SysSWRS[2]}},
+                        {'fill': {'color': g_Color_SysSWRS[3]}},
+						{'fill': {'color': g_Color_SysSWRS[4]}},
+                        ],
+            })
+#
+        # 设置Legend位置
+        chart_status.set_legend({'position': 'bottom'})
+        # 图表大小（像素）
+        chart_status.set_size({'width': g_Width, 'height': g_Height})
+
+        # 把图表插入到worksheet以及偏移
+        new_worksheet.insert_chart('A10', chart_status, {'x_offset': 100, 'y_offset': 200})
+
+# --------generate status chart colum end ---------------
+
+
+
+
+        # close tmp file after generate two combined chart
+        writer.save()
+        tmp_workbook.close()
+
+        print('############# xlsxwriter - Generate a tmp excel and input grath - end #############')
+
+        print('############ copy sheet to latest report - start ############')
+        wb_tmp = xw.Book(TMP_FILE)
+        sheet_new   = wb_tmp.sheets(NEWSUMSHEET)
+
+        wb_latest = xw.Book(HIS_REPORTS[l_Last_Valid_idx])
+
+        # After is not working
+        sheet_new.api.Copy(Before=wb_latest.sheets[ReqTestSheet].api)
+
+        wb_tmp.close()
+        #wb_tmp.app.quit()
+
+        wb_latest.save()
+        wb_latest.close()
+        #wb_latest.app.quit()
+
+
+        #判断文件是否存在
+        #os.rmdir("myfolder")  # delete folder
+        if os.path.exists(TMP_FILE):
+          os.remove(TMP_FILE)
+          print("Tmp file deleted")
+        else:
+          print("Tmp file does not exist")
+        print('############ copy sheet to latest report - end ############')
+    else:
+        print('dic is empty')
+
+
+
+
+if __name__ == '__main__':
+    print('main start')
+
+    _Gen_CusRSGraph(g_CusRS_Status_Dict, g_CusRSAgreed_Dict, Req_Report)
+#    _Gen_SysSWRSGraph(g_SysSWRS_Status_Dict, g_SysSWRSAgreed_Dict, Req_Report)
+    print('main end', __name__)
+
+
+
+
