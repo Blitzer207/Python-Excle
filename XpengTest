@@ -1,0 +1,205 @@
+import glob
+import pandas as pd
+import shutil
+import os
+time = input('date：')
+#pro = input('object：')
+#radar=input('CR OR FR')
+path = ('N:\\Tech\\DA\\03_Radar\\09_Engineering\\58_RM\\GEN5\\RM Status\\Jenkins Report\\Xpeng_ED\\%s\\*'%(time))
+
+# 指定FR的存储路径
+outpath_FRCust='N:/Tech/DA/03_Radar/09_Engineering/58_RM/GEN5/RM Status/Xpeng_ED_FR5/CustRS'
+outpath_FRSW_1R1V  = 'N:/Tech/DA/03_Radar/09_Engineering/58_RM/GEN5/RM Status/Xpeng_ED_FR5/SWRS/1R1V_3R1V'
+outpath_FRSW_5R1V  = 'N:/Tech/DA/03_Radar/09_Engineering/58_RM/GEN5/RM Status/Xpeng_ED_FR5/SWRS/5R1V'
+outpath_FRSys_1R1V = 'N:/Tech/DA/03_Radar/09_Engineering/58_RM/GEN5/RM Status/Xpeng_ED_FR5/SysRS/1R1V_3R1V'
+outpath_FRSys_5R1V = 'N:/Tech/DA/03_Radar/09_Engineering/58_RM/GEN5/RM Status/Xpeng_ED_FR5/SysRS/5R1V'
+outpath_FRSys_Test_1R1V = 'N:/Tech/DA/03_Radar/09_Engineering/58_RM/GEN5/RM Status/Xpeng_ED_FR5/SysTestRS/1R1V_3R1V'
+outpath_FRSys_Test_5R1V = 'N:/Tech/DA/03_Radar/09_Engineering/58_RM/GEN5/RM Status/Xpeng_ED_FR5/SysTestRS/5R1V'
+# 指定R的存储路径
+outpath_CRCust= 'N:/Tech/DA/03_Radar/09_Engineering/58_RM/GEN5/RM Status/Xpeng_ED_CR5/CustRS/'
+outpath_CRSW_1R1V_RC  = 'N:/Tech/DA/03_Radar/09_Engineering/58_RM/GEN5/RM Status/Xpeng_ED_CR5/SWRS/1R1V_3R1V/RC'
+outpath_CRSW_5R1V1D_FC = 'N:/Tech/DA/03_Radar/09_Engineering/58_RM/GEN5/RM Status/Xpeng_ED_CR5/SWRS/5R1V1D/FC'
+outpath_CRSW_5R1V1D_RC = 'N:/Tech/DA/03_Radar/09_Engineering/58_RM/GEN5/RM Status/Xpeng_ED_CR5/SWRS/5R1V1D/RC'
+outpath_CRSys_1R1V_RC = 'N:/Tech/DA/03_Radar/09_Engineering/58_RM/GEN5/RM Status/Xpeng_ED_CR5/SysRS/1R1V_3R1V/RC'
+outpath_CRSys_5R1V1D_FC = 'N:/Tech/DA/03_Radar/09_Engineering/58_RM/GEN5/RM Status/Xpeng_ED_CR5/SysRS/5R1V1D/FC'
+outpath_CRSys_5R1V1D_RC = 'N:/Tech/DA/03_Radar/09_Engineering/58_RM/GEN5/RM Status/Xpeng_ED_CR5/SysRS/5R1V1D/RC'
+outpath_CRSys_Test_1R1V_RC = 'N:/Tech/DA/03_Radar/09_Engineering/58_RM/GEN5/RM Status/Xpeng_ED_CR5/SysTestRS/1R1V_3R1V/RC'
+outpath_CRSys_Test_5R1V1D_RC = 'N:/Tech/DA/03_Radar/09_Engineering/58_RM/GEN5/RM Status/Xpeng_ED_CR5/SysTestRS/5R1V1D/RC'
+outpath_CRSys_Test_5R1V1D_FC = 'N:/Tech/DA/03_Radar/09_Engineering/58_RM/GEN5/RM Status/Xpeng_ED_CR5/SysTestRS/5R1V1D/FC'
+file = glob.glob(path)
+
+#先对一个xlsx进行操作，截取一个表中想要的列
+for i in file:
+#CR的遍历对照结果
+    if 'Corner_CustomerReq' in i:
+        data = pd.read_excel(i, sheet_name='PivotReqSrc')
+        New_Name = 'Cust-%s'%(time)
+        print( New_Name)
+        writer = pd.ExcelWriter('%s.xlsx'%New_Name)#将该sheet导出为excel文件
+        if os.path.exists(outpath_CRCust + '%s.xlsx'%New_Name):
+           os.remove(outpath_CRCust + '%s.xlsx'%New_Name)
+        data.to_excel(writer,float_format='%.5f')
+        writer.save()
+        shutil.move('%s.xlsx'%New_Name, outpath_CRCust)
+
+
+    elif 'FrontCorner_5R1V1D_SoftwareTest' in i:
+        data = pd.read_excel(i, sheet_name='PivotReqSrc')
+        New_Name = 'SW-%s'%(time)
+        writer = pd.ExcelWriter('%s.xlsx'%New_Name)
+        if os.path.exists(outpath_CRSW_5R1V1D_FC + '%s.xlsx'%New_Name):
+           os.remove(outpath_CRSW_5R1V1D_FC + '%s.xlsx'%New_Name)
+        data.to_excel(writer, float_format='%.5f')
+        writer.save()
+        shutil.move('%s.xlsx'%New_Name, outpath_CRSW_5R1V1D_FC)
+
+    elif 'FrontCorner_5R1V1D_SystemReq' in i:
+        data = pd.read_excel(i, sheet_name='PivotReqSrc')
+        New_Name = 'Sys-%s'%(time)
+        writer = pd.ExcelWriter('%s.xlsx'%New_Name)
+        if os.path.exists(outpath_CRCust + '%s.xlsx'%New_Name):
+           os.remove(outpath_CRSys_5R1V1D_FC + '%s.xlsx'%New_Name)
+        data.to_excel(writer, float_format='%.5f')
+        writer.save()
+        shutil.move('%s.xlsx'%New_Name, outpath_CRSys_5R1V1D_FC)
+
+    elif 'FrontCorner_5R1V1D_SystemTest' in i:
+        data = pd.read_excel(i, sheet_name='PivotReqSrc')
+        New_Name = 'Sys-%s'%(time)
+        writer = pd.ExcelWriter('%s.xlsx'%New_Name)
+        if os.path.exists(outpath_CRSys_Test_5R1V1D_FC + '%s.xlsx'%New_Name):
+           os.remove(outpath_CRSys_Test_5R1V1D_FC + '%s.xlsx'%New_Name)
+        data.to_excel(writer, float_format='%.5f')
+        writer.save()
+        shutil.move('%s.xlsx'%New_Name, outpath_CRSys_Test_5R1V1D_FC)
+
+    elif 'RearCorner_1R1V_3R1V_SoftwareTest' in i:
+        data = pd.read_excel(i, sheet_name='PivotReqSrc')
+        New_Name = 'SW-%s'%(time)
+        writer = pd.ExcelWriter('%s.xlsx'%New_Name)
+        if os.path.exists(outpath_CRCust + '%s.xlsx'%New_Name):
+           os.remove(outpath_CRSW_1R1V_RC + '%s.xlsx'%New_Name)
+        data.to_excel(writer, float_format='%.5f')
+        writer.save()
+        shutil.move('%s.xlsx'%New_Name, outpath_CRSW_1R1V_RC)
+
+    elif 'RearCorner_1R1V_3R1V_SystemReq' in i:
+        data = pd.read_excel(i, sheet_name='PivotReqSrc')
+        New_Name = 'Sys-%s'%(time)
+        writer = pd.ExcelWriter('%s.xlsx'%New_Name)
+        if os.path.exists(outpath_CRCust + '%s.xlsx'%New_Name):
+           os.remove(outpath_CRSys_1R1V_RC + '%s.xlsx'%New_Name)
+        data.to_excel(writer, float_format='%.5f')
+        writer.save()
+        shutil.move('%s.xlsx'%New_Name, outpath_CRSys_1R1V_RC)
+
+    elif 'RearCorner_1R1V_3R1V_SystemTest' in i:
+        data = pd.read_excel(i, sheet_name='PivotReqSrc')
+        New_Name = 'Sys-%s'%(time)
+        writer = pd.ExcelWriter('%s.xlsx'%New_Name)
+        if os.path.exists(outpath_CRSys_Test_1R1V_RC + '%s.xlsx'%New_Name):
+           os.remove(outpath_CRSys_Test_1R1V_RC + '%s.xlsx'%New_Name)
+        data.to_excel(writer, float_format='%.5f')
+        writer.save()
+        shutil.move('%s.xlsx'%New_Name, outpath_CRSys_Test_1R1V_RC)
+
+    elif 'RearCorner_5R1V1D_SoftwareTest' in i:
+        data = pd.read_excel(i, sheet_name='PivotReqSrc')
+        New_Name = 'SW-%s'%(time)
+        writer = pd.ExcelWriter('%s.xlsx'%New_Name)
+        if os.path.exists(outpath_CRSW_5R1V1D_RC + '%s.xlsx'%New_Name):
+           os.remove(outpath_CRSW_5R1V1D_RC + '%s.xlsx'%New_Name)
+        data.to_excel(writer, float_format='%.5f')
+        writer.save()
+        shutil.move('%s.xlsx'%New_Name, outpath_CRSW_5R1V1D_RC)
+
+    elif 'RearCorner_5R1V1D_SystemReq' in i:
+        data = pd.read_excel(i, sheet_name='PivotReqSrc')
+        New_Name = 'Sys-%s'%(time)
+        writer = pd.ExcelWriter('%s.xlsx'%New_Name)
+        if os.path.exists(outpath_CRSys_5R1V1D_RC + '%s.xlsx'%New_Name):
+           os.remove(outpath_CRSys_5R1V1D_RC + '%s.xlsx'%New_Name)
+        data.to_excel(writer, float_format='%.5f')
+        writer.save()
+        shutil.move('%s.xlsx'%New_Name, outpath_CRSys_5R1V1D_RC)
+
+    elif 'RearCorner_5R1V1D_SystemTest' in i:
+        data = pd.read_excel(i, sheet_name='PivotReqSrc')
+        New_Name = 'Sys-%s'%(time)
+        writer = pd.ExcelWriter('%s.xlsx'%New_Name)
+        if os.path.exists(outpath_CRSys_Test_5R1V1D_RC + '%s.xlsx'%New_Name):
+           os.remove(outpath_CRSys_Test_5R1V1D_RC + '%s.xlsx'%New_Name)
+        data.to_excel(writer, float_format='%.5f')
+        writer.save()
+        shutil.move('%s.xlsx'%New_Name, outpath_CRSys_Test_5R1V1D_RC)
+
+    #FR的对照结果
+    elif 'FR_1R1V_3R1V_SoftwareTest' in i:
+        data = pd.read_excel(i, sheet_name='PivotReqSrc')
+        New_Name = 'SW-%s'%(time)
+        writer = pd.ExcelWriter('%s.xlsx'%New_Name)
+        if os.path.exists(outpath_FRSW_1R1V + '%s.xlsx'%New_Name):
+           os.remove(outpath_FRSW_1R1V + '%s.xlsx'%New_Name)
+        data.to_excel(writer, float_format='%.5f')
+        writer.save()
+        shutil.move('%s.xlsx'%New_Name, outpath_FRSW_1R1V)
+
+    elif 'FR_1R1V_3R1V_SystemTest' in i:
+        data = pd.read_excel(i, sheet_name='PivotReqSrc')
+        New_Name = 'Sys-%s'%(time)
+        writer = pd.ExcelWriter('%s.xlsx'%New_Name)
+        if os.path.exists(outpath_FRSys_Test_1R1V + '%s.xlsx'%New_Name):
+           os.remove(outpath_FRSys_Test_1R1V + '%s.xlsx'%New_Name)
+        data.to_excel(writer, float_format='%.5f')
+        writer.save()
+        shutil.move('%s.xlsx'%New_Name, outpath_FRSys_Test_1R1V)
+
+    elif 'FR_5R1V_SoftwareTest' in i:
+        data = pd.read_excel(i, sheet_name='PivotReqSrc')
+        New_Name = 'SW-%s'%(time)
+        writer = pd.ExcelWriter('%s.xlsx'%New_Name)
+        if os.path.exists(outpath_FRSW_5R1V + '%s.xlsx'%New_Name):
+           os.remove(outpath_FRSW_5R1V + '%s.xlsx'%New_Name)
+        data.to_excel(writer, float_format='%.5f')
+        writer.save()
+        shutil.move('%s.xlsx'%New_Name, outpath_FRSW_5R1V)
+
+    elif 'FR_5R1V_SystemTest' in i:
+        data = pd.read_excel(i, sheet_name='PivotReqSrc')
+        New_Name = 'Sys-%s'%(time)
+        writer = pd.ExcelWriter('%s.xlsx'%New_Name)
+        if os.path.exists(outpath_FRSys_Test_5R1V + '%s.xlsx'%New_Name):
+           os.remove(outpath_FRSys_Test_5R1V + '%s.xlsx'%New_Name)
+        data.to_excel(writer, float_format='%.5f')
+        writer.save()
+        shutil.move('%s.xlsx'%New_Name, outpath_FRSys_Test_5R1V)
+
+    elif 'Front_1R1V_3R1V_SystemReq' in i:
+        data = pd.read_excel(i, sheet_name='PivotReqSrc')
+        New_Name = 'Sys-%s'%(time)
+        writer = pd.ExcelWriter('%s.xlsx'%New_Name)
+        if os.path.exists(outpath_FRSys_1R1V + '%s.xlsx'%New_Name):
+           os.remove(outpath_FRSys_1R1V + '%s.xlsx'%New_Name)
+        data.to_excel(writer, float_format='%.5f')
+        writer.save()
+        shutil.move('%s.xlsx'%New_Name, outpath_FRSys_1R1V)
+
+    elif 'Front_CustomerReqStatus' in i:
+        data = pd.read_excel(i, sheet_name='PivotReqSrc')
+        New_Name = 'Cust-%s'%(time)
+        writer = pd.ExcelWriter('%s.xlsx'%New_Name)
+        if os.path.exists(outpath_FRCust + '%s.xlsx'%New_Name):
+           os.remove(outpath_FRCust + '%s.xlsx'%New_Name)
+        data.to_excel(writer, float_format='%.5f')
+        writer.save()
+        shutil.move('%s.xlsx'%New_Name, outpath_FRCust)
+
+    elif'Front_5R1V_SystemReqStatus' in i:
+        data = pd.read_excel(i, sheet_name='PivotReqSrc')
+        New_Name = 'Sys-%s'%(time)
+        writer = pd.ExcelWriter('%s.xlsx'%New_Name)
+        if os.path.exists(outpath_FRSys_5R1V + '%s.xlsx'%New_Name):
+           os.remove(outpath_FRSys_5R1V + '%s.xlsx'%New_Name)
+        data.to_excel(writer, float_format='%.5f')
+        writer.save()
+        shutil.move('%s.xlsx'%New_Name, outpath_FRSys_5R1V)
